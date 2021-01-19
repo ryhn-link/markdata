@@ -1,0 +1,39 @@
+module example.app;
+
+import std.stdio;
+import std.file;
+import std.conv;
+
+import markdata.parser;
+import markdata.deserializer;
+
+class Info
+{
+	int Year;
+	string Author;
+	@MetaKey("Some other data")
+	string[] OtherData;
+}
+
+void main()
+{
+	string md = readText("example.md");
+
+	auto meta = parseMetadata(md);
+	
+	writeln("Metadata:");
+	writeln(meta.data);
+	
+	writeln();
+
+	writeln("Remaining Text:");
+	writeln(meta.remainingText);
+	
+	writeln();
+
+	writeln("Serialized:");
+	Info inf = deserializeMetadata!Info(meta.data);
+	writeln("Author: \t" ~ inf.Author);
+	writeln("Other Data: \t" ~ inf.OtherData.to!string());
+	writeln("Year: \t\t" ~ inf.Year.to!string());
+}

@@ -1,0 +1,9 @@
+{
+	"authors": [
+		"Ryhon"
+	],
+	"copyright": "Copyright © 2021, Ryhon",
+	"description": "Markdown metadata parser",
+	"license": "LGPL-3.0",
+	"name": "markdata"
+}

@@ -1,0 +1,11 @@
+{
+	"authors": [
+		"Ryhon"
+	],
+	"copyright": "Copyright © 2021, Ryhon",
+	"description": "Example ussage of markdata",
+	"name": "md-example",
+	"dependencies": {
+		"markdata": {"path": ".."}
+	}
+}
