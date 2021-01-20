@@ -3,6 +3,7 @@ module markdata.deserializer;
 import std.stdio;
 import std.conv;
 import std.array;
+import std.datetime;
 import std.traits;
 import std.exception;
 
@@ -61,6 +62,14 @@ T parseValue(T)(string[] values)
 	else static if(is(T == string[]))
 	{
 		return values;
+	}
+	else static if(is(T == Date))
+	{
+		return Date.fromISOExtString(join(values));
+	}
+	else static if(is(T == DateTime))
+	{
+		return DateTime.fromISOExtString(join(values));
 	}
 	// Iterable
 	else static if( isIterable!T )
