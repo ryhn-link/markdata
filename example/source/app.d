@@ -19,6 +19,9 @@ class Info
 	Date date;
 	@MetaKey("DateTime")
 	DateTime dateTime;
+	@MetaKey("IgnoredValue")
+	@MetaIgnore
+	int IgnoredValue = 0;
 }
 
 void main()
@@ -44,5 +47,5 @@ void main()
 	writeln("Year: \t\t" ~ inf.Year.to!string());
 	writeln("Date: \t\t" ~ inf.date.to!string());
 	writeln("DateTime: \t" ~ inf.dateTime.to!string());
-
+	writeln("IgnoredValue: \t" ~ inf.IgnoredValue.to!string());
 }

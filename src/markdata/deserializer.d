@@ -14,35 +14,45 @@ struct MetaKey
 	string name;
 }
 
+struct MetaIgnore
+{
+}
+
 /// Serialize string[][string] into class or struct
 T deserializeMetadata(T)(string[][string] data)
 {
 	T var;
-	static if(is(T == class)) var = new T;
-	else static if(is(T == class)) var = T();
+	static if (is(T == class))
+		var = new T;
+	else static if (is(T == class))
+		var = T();
 
 	foreach (i, ref field; var.tupleof)
 	{
-		// Get field name
-		string name = __traits(identifier, var.tupleof[i]);
+		import std.traits;
 
-		// Check if property exists
-		// Use field name
-		if(name in data) 
+		static if (!hasUDA!(var.tupleof[i], MetaIgnore))
 		{
-			var.tupleof[i] = parseValue!(typeof(var.tupleof[i]))(data[name]);
-			continue;
-		}
-		// Use MetaKey AtAttribute
-		foreach (at; __traits(getAttributes, var.tupleof[i]))
-		{
-			static if(is(typeof(at) == MetaKey))
+			// Get field name
+			string name = __traits(identifier, var.tupleof[i]);
+
+			// Check if property exists
+			// Use field name
+			if (name in data)
 			{
-				name = at.name;
-				if(name in data)
+				var.tupleof[i] = parseValue!(typeof(var.tupleof[i]))(data[name]);
+				continue;
+			}
+			// Use MetaKey AtAttribute
+			static foreach (at; __traits(getAttributes, var.tupleof[i]))
+			{
+				static if (is(typeof(at) == MetaKey))
 				{
-					var.tupleof[i] = parseValue!(typeof(var.tupleof[i]))(data[name]);
-					continue;
+					name = at.name;
+					if (name in data)
+					{
+						var.tupleof[i] = parseValue!(typeof(var.tupleof[i]))(data[name]);
+					}
 				}
 			}
 		}
@@ -54,25 +64,25 @@ T deserializeMetadata(T)(string[][string] data)
 T parseValue(T)(string[] values)
 {
 	// string
-	static if(is(T == string))
+	static if (is(T == string))
 	{
 		return join(values, "\n");
 	}
 	// string[]
-	else static if(is(T == string[]))
+	else static if (is(T == string[]))
 	{
 		return values;
 	}
-	else static if(is(T == Date))
+	else static if (is(T == Date))
 	{
 		return Date.fromISOExtString(join(values));
 	}
-	else static if(is(T == DateTime))
+	else static if (is(T == DateTime))
 	{
 		return DateTime.fromISOExtString(join(values));
 	}
 	// Iterable
-	else static if( isIterable!T )
+	else static if (isIterable!T)
 	{
 		return to!T(values);
 	}
@@ -94,15 +104,15 @@ unittest
 		@MetaKey("Year") int year;
 	}
 
-	string md = 
-"Author: JKR
+	string md =
+		"Author: JKR
 Tags: Based
 Harry Potter
 Popular
 Year: 2021
 
 blah blah blah based blah";
-	
+
 	import markdata;
 
 	BlogPost post = serializeMetadata!BlogPost(parseMetadata(md).data);
